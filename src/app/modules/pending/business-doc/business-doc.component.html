@@ -1,0 +1,506 @@
+<app-layout>
+
+    <div id="Business-Document">
+        <div class="header">
+            <div class="page-header">
+                <button mat-mini-fab (click)="goback()"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <h1>Business Document</h1>
+
+            </div>
+            <div class="company-details">
+                <h2>Campany Name: Amazon</h2>
+                <h2>GSTIN: 27AAICA3918J1CT</h2>
+            </div>
+        </div>
+        <form [formGroup]="form">
+            <div class="main-wrapper">
+                    <mat-accordion class="CustEx">
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Business Proof*
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+
+
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Firm PAN" [readonly]="!editable">
+                                            </mat-form-field>
+
+                                            <mat-form-field style="padding-bottom: 20px;" appearance="outline">
+                                                <mat-label>Document Number</mat-label>
+                                                <input type="text" matInput value="GHYDPP59P" [readonly]="!editable">
+                                            </mat-form-field>
+                                        </td>
+
+
+
+
+                                        <td>
+
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                        </td>
+
+
+
+
+                                        <td>
+                                            <div class="operation">
+
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : businessFlagDone, 'black': !businessFlagDone}"
+                                                    (click)="doneFlagBusiness()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !businessFlagCancel, 'red': businessFlagCancel}"
+                                                    (click)="cancelFlagBusiness()"><mat-icon>close</mat-icon></button><br><br>
+
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':businessFlagDone, 'notRequiredColor':!businessFlagDone}"
+                                                        [ngClass]="{'requiredColor':businessFlagCancel , 'notRequiredColor':!businessFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="business_proof">
+                                                        <mat-option *ngFor="let c of businessCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                </table>
+
+
+
+                            </div>
+
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>
+                                    Ownership Proof* 
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+
+
+
+                                <table>
+                                    <tr>
+                                        <td>
+
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Electricity Bill"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Number</mat-label>
+                                                <input type="text" matInput value="EBL6463778" [readonly]="!editable">
+                                            </mat-form-field>
+
+                                        </td>
+                                        <td>
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+
+                                                    </span>
+
+                                                </div>
+
+
+                                            </div>
+
+
+                                        </td>
+                                        <td>
+
+                                            <div class="operation">
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : ownershipFlagDone, 'black': !ownershipFlagDone}"
+                                                    (click)="doneFlagOwnership()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !ownershipFlagCancel, 'red': ownershipFlagCancel }"
+                                                    (click)="cancelFlagOwnership()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':ownershipFlagDone, 'notRequiredColor':!ownershipFlagDone}"
+                                                        [ngClass]="{'requiredColor':ownershipFlagCancel , 'notRequiredColor':!ownershipFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="ownership_proof">
+                                                        <mat-option *ngFor="let c of ownershipCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                </table>
+
+                            </div>
+
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Vintage Proof* 
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+
+
+
+
+
+
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Number</mat-label>
+                                                <input type="text" matInput value="Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                        </td>
+                                        <td>
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td ngif="pending? show:hide" >
+                                            <div class="operation">
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : vintageFlagDone, 'black': !vintageFlagDone}"
+                                                    (click)="doneFlagVintage()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !vintageFlagCancel, 'red': vintageFlagCancel}"
+                                                    (click)="cancelFlagVintage()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':vintageFlagDone, 'notRequiredColor':!vintageFlagDone}"
+                                                        [ngClass]="{'requiredColor':vintageFlagCancel , 'notRequiredColor':!vintageFlagCancel} ">Comments</mat-label>
+                                                    <mat-select formControlName="vintage_proof">
+                                                        <mat-option *ngFor="let c of vintageCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                            <h1>approved</h1>
+
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </mat-expansion-panel>
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Firm/Partnership Details*
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Business Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Number</mat-label>
+                                                <input type="text" matInput value="Business Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                        </td>
+                                        <td>
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="operation">
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : FirmFlagDone, 'black': !FirmFlagDone}"
+                                                    (click)="doneFlagPatnership()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !FirmFlagCancel, 'red': FirmFlagCancel}"
+                                                    (click)="cancelFlagPatnership()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':FirmFlagDone, 'notRequiredColor':!FirmFlagDone}"
+                                                        [ngClass]="{'requiredColor':FirmFlagCancel , 'notRequiredColor':!FirmFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="firm_details">
+                                                        <mat-option *ngFor="let c of firmCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Banking Details*
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Business Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Number</mat-label>
+                                                <input type="text" matInput value="Business Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                        </td>
+                                        <td>
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="operation">
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : bankingFlagDone, 'black': !bankingFlagDone}"
+                                                    (click)="doneFlagBanking()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !bankingFlagCancel, 'red': bankingFlagCancel}"
+                                                    (click)="cancelFlagBanking()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':bankingFlagDone, 'notRequiredColor':!bankingFlagDone}"
+                                                        [ngClass]="{'requiredColor':bankingFlagCancel , 'notRequiredColor':!bankingFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="banking_details">
+                                                        <mat-option *ngFor="let c of bankingCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title> GST Returns Document(Upto 24 Months)*
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Business Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Number</mat-label>
+                                                <input type="text" matInput value="Business Vintage Proof"
+                                                    [readonly]="!editable">
+                                            </mat-form-field>
+
+                                        </td>
+                                        <td>
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="operation">
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : gstFlagDone, 'black': !gstFlagDone}"
+                                                    (click)="doneFlagGST()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !gstFlagCancel, 'red': gstFlagCancel}"
+                                                    (click)="cancelFlagGST()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':gstFlagDone, 'notRequiredColor':!gstFlagDone}"
+                                                        [ngClass]="{'requiredColor':gstFlagCancel , 'notRequiredColor':!gstFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="gst_details">
+                                                        <mat-option *ngFor="let c of gstCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </mat-expansion-panel>
+
+                        <mat-expansion-panel class="mat-elevation-z0">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title>Store Images*
+                                </mat-panel-title>
+                                <mat-panel-description>
+                                    <mat-icon style="color: green;">check_circle</mat-icon>
+                                    <mat-icon style="color: red;">remove_circle</mat-icon>
+                                </mat-panel-description>
+                            </mat-expansion-panel-header>
+                            <div class="panelbody">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <mat-form-field appearance="outline">
+                                                <mat-label>Document Type</mat-label>
+                                                <input type="text" matInput value="Images" [readonly]="!editable">
+                                            </mat-form-field>
+
+
+
+                                        </td>
+                                        <td>
+                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
+                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                                                    [ngClass]="{'image-active': selectedIndex === i}" />
+                                                <div *ngIf="indicators" class="carousel-dot-container">
+                                                    <span *ngFor="let dot of photos let i=index" class="dot"
+                                                        [ngClass]="{'active':selectedIndex === i}"
+                                                        (click)="selectImage(i)">
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="operation">
+                                                <button style="margin-left:4rem" mat-mini-fab
+                                                    [ngClass]="{'green' : imagesFlagDone, 'black': !imagesFlagDone}"
+                                                    (click)="doneFlagImage()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab
+                                                    [ngClass]="{'black' : !imagesFlagCancel, 'red': imagesFlagCancel}"
+                                                    (click)="cancelFlagImage()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label
+                                                        [ngClass]="{'requiredColor':imagesFlagDone, 'notRequiredColor':!imagesFlagDone}"
+                                                        [ngClass]="{'requiredColor':imagesFlagCancel , 'notRequiredColor':!imagesFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="images">
+                                                        <mat-option *ngFor="let c of imagesCommentsList"
+                                                            [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                    <div class="btn-view">
+                        <button mat-raised-button style="background-color:#f79e1b" type="submit" (click)="onSubmit()">
+                            <h3>Submit</h3>
+                        </button>
+                    </div>
+
+                
+
+
+            </div>
+        </form>
+
+    </div>
+</app-layout>

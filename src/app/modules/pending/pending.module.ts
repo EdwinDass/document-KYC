@@ -16,6 +16,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatCardModule } from '@angular/material/card';
 import {  ReactiveFormsModule } from '@angular/forms';
+import { FilesDialogComponent } from './files-dialog/files-dialog.component';
+// import { data } from '../pending-doc/pending-doc.component';
+
 
 
 @NgModule({
@@ -23,6 +26,7 @@ import {  ReactiveFormsModule } from '@angular/forms';
     PendingDocComponent,
     KycDocComponent,
     BusinessDocComponent,
+    FilesDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -38,6 +42,9 @@ import {  ReactiveFormsModule } from '@angular/forms';
     MatExpansionModule,
     MatCardModule,
     ReactiveFormsModule
-  ]
+  ],
+  // exports:[
+  //   data
+  // ]
 })
 export class PendingModule { }

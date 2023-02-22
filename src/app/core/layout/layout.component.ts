@@ -38,6 +38,6 @@ export class LayoutComponent {
     this.sidenav.toggle();
   }
   logout(){
-    this.router.navigate(['login']);
+    this.router.navigate(['']);
   }
 }

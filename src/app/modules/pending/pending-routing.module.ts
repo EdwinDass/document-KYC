@@ -6,8 +6,8 @@ import { PendingDocComponent } from './pending-doc/pending-doc.component';
 
 const routes: Routes = [
   { path: "pending", component: PendingDocComponent },
-  { path: "kyc_document", component: KycDocComponent },
-  { path: "business_document", component: BusinessDocComponent }
+  { path: "kyc_document/:id", component: KycDocComponent },
+  { path: "business_document/:id", component: BusinessDocComponent }
 ];
 
 @NgModule({

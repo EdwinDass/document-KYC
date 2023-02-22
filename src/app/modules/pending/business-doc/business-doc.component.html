@@ -8,62 +8,70 @@
 
             </div>
             <div class="company-details">
-                <h2>Campany Name: Amazon</h2>
-                <h2>GSTIN: 27AAICA3918J1CT</h2>
+                <h2>Campany Name: {{companyDetails.company_name?companyDetails.company_name:""}}</h2>
+                <h2>GSTIN: {{companyDetails.gstin?companyDetails.gstin:""}}</h2>
             </div>
         </div>
         <form [formGroup]="form">
             <div class="main-wrapper">
-                    <mat-accordion class="CustEx">
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Business Proof*
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
+                <mat-accordion class="CustEx">
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>Business Proof*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.business.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.business.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
 
 
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Firm PAN" [readonly]="!editable">
-                                            </mat-form-field>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Document Type</mat-label>
+                                            <input type="text" matInput
+                                                value={{BuzDetails.business.documentType}}
+                                                [readonly]="!editable">
+                                        </mat-form-field>
 
-                                            <mat-form-field style="padding-bottom: 20px;" appearance="outline">
-                                                <mat-label>Document Number</mat-label>
-                                                <input type="text" matInput value="GHYDPP59P" [readonly]="!editable">
-                                            </mat-form-field>
-                                        </td>
+                                        <mat-form-field style="padding-bottom: 20px;" appearance="outline">
+                                            <mat-label>Document Number</mat-label>
+                                            <input type="text" matInput value={{BuzDetails.business.documentNumber}}
+                                                [readonly]="!editable">
+                                        </mat-form-field>
+                                    </td>
 
 
 
 
-                                        <td>
+                                    <td>
 
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-                                                    </span>
-                                                </div>
+                                        <div *ngIf="BuzDetails.business.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.business.files; let i=index">
+                                            <div *ngIf="BuzDetails.business.files[i].includes('.jpg?') || BuzDetails.business.files[i].includes('.jpeg?') || BuzDetails.business.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.business.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.business.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
 
-                                        </td>
+                                    </td>
 
 
 
 
-                                        <td>
-                                            <div class="operation">
+                                    <td>
+                                        <div class="operation">
+                                            <div *ngIf="BuzDetails.business.status=='In-Progress'; else elseBusiness">
 
                                                 <button style="margin-left:4rem" mat-mini-fab
                                                     [ngClass]="{'green' : businessFlagDone, 'black': !businessFlagDone}"
@@ -82,68 +90,81 @@
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
-                                        </td>
-
-                                    </tr>
-                                </table>
-
-
-
-                            </div>
-
-                        </mat-expansion-panel>
-
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>
-                                    Ownership Proof* 
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
-
-
-
-                                <table>
-                                    <tr>
-                                        <td>
-
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Electricity Bill"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Number</mat-label>
-                                                <input type="text" matInput value="EBL6463778" [readonly]="!editable">
-                                            </mat-form-field>
-
-                                        </td>
-                                        <td>
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-
-                                                    </span>
-
+                                            <ng-template #elseBusiness>
+                                                <div *ngIf="BuzDetails.business.status=='Approved'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
                                                 </div>
+                                                <div *ngIf="BuzDetails.business.status=='Rejected'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </table>
 
 
+
+                        </div>
+
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Ownership Proof*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.ownership.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.ownership.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+
+
+
+                            <table>
+                                <tr>
+                                    <td>
+
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Document Type</mat-label>
+                                            <input type="text" matInput value={{BuzDetails.ownership.documentType}}
+                                                [readonly]="!editable">
+                                        </mat-form-field>
+
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Document Number</mat-label>
+                                            <input type="text" matInput value={{BuzDetails.ownership.documentNumber}}
+                                                [readonly]="!editable">
+                                        </mat-form-field>
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.ownership.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.ownership.files; let i=index">
+                                            <div *ngIf="BuzDetails.ownership.files[i].includes('.jpg?') || BuzDetails.ownership.files[i].includes('.jpeg?') || BuzDetails.ownership.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.ownership.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.ownership.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
 
 
-                                        </td>
-                                        <td>
+                                    </td>
+                                    <td>
 
-                                            <div class="operation">
+                                        <div class="operation">
+                                            <div *ngIf="BuzDetails.ownership.status=='In-Progress'; else elseOwnership">
                                                 <button style="margin-left:4rem" mat-mini-fab
                                                     [ngClass]="{'green' : ownershipFlagDone, 'black': !ownershipFlagDone}"
                                                     (click)="doneFlagOwnership()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
@@ -160,61 +181,72 @@
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
-                                        </td>
-
-                                    </tr>
-                                </table>
-
-                            </div>
-
-                        </mat-expansion-panel>
-
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Vintage Proof* 
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
-
-
-
-
-
-
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Number</mat-label>
-                                                <input type="text" matInput value="Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                        </td>
-                                        <td>
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-                                                    </span>
+                                            <ng-template #elseOwnership>
+                                                <div *ngIf="BuzDetails.ownership.status=='Approved'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
                                                 </div>
+                                                <div *ngIf="BuzDetails.ownership.status=='Rejected'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            </table>
+
+                        </div>
+
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>Vintage Proof*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.vintage.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.vintage.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+
+
+
+
+
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Document Type</mat-label>
+                                            <input type="text" matInput value="{{BuzDetails.vintage.documentType}}"
+                                                [readonly]="!editable">
+                                        </mat-form-field>
+
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.vintage.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.vintage.files; let i=index">
+                                            <div *ngIf="BuzDetails.vintage.files[i].includes('.jpg?') || BuzDetails.vintage.files[i].includes('.jpeg?') || BuzDetails.vintage.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.vintage.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
-                                        </td>
-                                        <td ngif="pending? show:hide" >
-                                            <div class="operation">
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.vintage.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
+                                    </td>
+                                    <td >
+                                        <div class="operation">
+                                            <div *ngIf="BuzDetails.vintage.status=='In-Progress'; else elseVintage">
                                                 <button style="margin-left:4rem" mat-mini-fab
                                                     [ngClass]="{'green' : vintageFlagDone, 'black': !vintageFlagDone}"
                                                     (click)="doneFlagVintage()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
@@ -231,54 +263,63 @@
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
-                                            <h1>approved</h1>
-
-                                        </td>
-                                    </tr>
-                                </table>
-
-                            </div>
-                        </mat-expansion-panel>
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Firm/Partnership Details*
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Business Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Number</mat-label>
-                                                <input type="text" matInput value="Business Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                        </td>
-                                        <td>
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-                                                    </span>
+                                            <ng-template #elseVintage>
+                                                <div *ngIf="BuzDetails.vintage.status=='Approved'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
                                                 </div>
+                                                <div *ngIf="BuzDetails.vintage.status=='Rejected'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </mat-expansion-panel>
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>Firm/Partnership Details*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.partnership.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.partnership.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+                            <table>
+                                <tr>
+                                    <td>
+
+
+
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.partnership.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.partnership.files; let i=index">
+                                            <div *ngIf="BuzDetails.partnership.files[i].includes('.jpg?') || BuzDetails.partnership.files[i].includes('.jpeg?') || BuzDetails.partnership.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.partnership.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="operation">
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.partnership.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
+                                    </td>
+                                    <td>
+                                        <div class="operation">
+                                            <div
+                                                *ngIf="BuzDetails.partnership.status=='In-Progress'; else elsePartnership">
                                                 <button style="margin-left:4rem" mat-mini-fab
                                                     [ngClass]="{'green' : FirmFlagDone, 'black': !FirmFlagDone}"
                                                     (click)="doneFlagPatnership()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
@@ -295,54 +336,64 @@
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
-
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                        </mat-expansion-panel>
-
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Banking Details*
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Business Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Number</mat-label>
-                                                <input type="text" matInput value="Business Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                        </td>
-                                        <td>
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-                                                    </span>
+                                            <ng-template #elsePartnership>
+                                                <div *ngIf="BuzDetails.partnership.status=='Approved'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
                                                 </div>
+                                                <div *ngIf="BuzDetails.partnership.status=='Rejected'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>Banking Details*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.bankStatement.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.bankStatement.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Password</mat-label>
+                                            <input type="text" matInput value={{BuzDetails.bankStatement.password}} [readonly]="!editable">
+                                        </mat-form-field>
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.bankStatement.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.bankStatement.files; let i=index">
+                                            <div *ngIf="BuzDetails.bankStatement.files[i].includes('.jpg?') || BuzDetails.bankStatement.files[i].includes('.jpeg?') || BuzDetails.bankStatement.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.bankStatement.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="operation">
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.bankStatement.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
+                                    </td>
+                                    <td>
+                                        <div class="operation">
+                                            <div
+                                                *ngIf="BuzDetails.bankStatement.status=='In-Progress'; else elseBankStatement">
                                                 <button style="margin-left:4rem" mat-mini-fab
                                                     [ngClass]="{'green' : bankingFlagDone, 'black': !bankingFlagDone}"
                                                     (click)="doneFlagBanking()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
@@ -359,146 +410,237 @@
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
-
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                        </mat-expansion-panel>
-
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title> GST Returns Document(Upto 24 Months)*
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Business Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Number</mat-label>
-                                                <input type="text" matInput value="Business Vintage Proof"
-                                                    [readonly]="!editable">
-                                            </mat-form-field>
-
-                                        </td>
-                                        <td>
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-                                                    </span>
+                                            <ng-template #elseBankStatement>
+                                                <div *ngIf="BuzDetails.bankStatement.status=='Rejected'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
                                                 </div>
+                                                <div *ngIf="BuzDetails.bankStatement.status=='Approved'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </mat-expansion-panel>
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title> Financial Details*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.financial.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.financial.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+                            <table>
+                                <tr>
+                                    <td>
+
+
+
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.financial.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.financial.files; let i=index">
+                                            <div *ngIf="BuzDetails.financial.files[i].includes('.jpg?') || BuzDetails.financial.files[i].includes('.jpeg?') || BuzDetails.financial.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.financial.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="operation">
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.financial.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
+                                    </td>
+                                    <td>
+                                        <div class="operation">
+                                            <div *ngIf="BuzDetails.financial.status=='In-Progress'; else elseFinancial">
                                                 <button style="margin-left:4rem" mat-mini-fab
-                                                    [ngClass]="{'green' : gstFlagDone, 'black': !gstFlagDone}"
-                                                    (click)="doneFlagGST()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                    [ngClass]="{'green' : financialFlagDone, 'black': !financialFlagDone}"
+                                                    (click)="doneFlagFinancial()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
                                                 <button mat-mini-fab
-                                                    [ngClass]="{'black' : !gstFlagCancel, 'red': gstFlagCancel}"
-                                                    (click)="cancelFlagGST()"><mat-icon>close</mat-icon></button><br><br>
+                                                    [ngClass]="{'black' : !financialFlagCancel, 'red': financialFlagCancel}"
+                                                    (click)="cancelFlagFinancial()"><mat-icon>close</mat-icon></button><br><br>
                                                 <mat-form-field class="e" appearance="outline">
                                                     <mat-label
-                                                        [ngClass]="{'requiredColor':gstFlagDone, 'notRequiredColor':!gstFlagDone}"
-                                                        [ngClass]="{'requiredColor':gstFlagCancel , 'notRequiredColor':!gstFlagCancel}">Comments</mat-label>
-                                                    <mat-select formControlName="gst_details">
-                                                        <mat-option *ngFor="let c of gstCommentsList"
+                                                        [ngClass]="{'requiredColor':financialFlagDone, 'notRequiredColor':!financialFlagDone}"
+                                                        [ngClass]="{'requiredColor':financialFlagCancel , 'notRequiredColor':!financialFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="financial_details">
+                                                        <mat-option *ngFor="let c of financialCommentList"
                                                             [value]="c">{{c}}</mat-option>
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
-
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                        </mat-expansion-panel>
-
-                        <mat-expansion-panel class="mat-elevation-z0">
-                            <mat-expansion-panel-header>
-                                <mat-panel-title>Store Images*
-                                </mat-panel-title>
-                                <mat-panel-description>
-                                    <mat-icon style="color: green;">check_circle</mat-icon>
-                                    <mat-icon style="color: red;">remove_circle</mat-icon>
-                                </mat-panel-description>
-                            </mat-expansion-panel-header>
-                            <div class="panelbody">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Document Type</mat-label>
-                                                <input type="text" matInput value="Images" [readonly]="!editable">
-                                            </mat-form-field>
-
-
-
-                                        </td>
-                                        <td>
-                                            <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                                                <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
-                                                    [ngClass]="{'image-active': selectedIndex === i}" />
-                                                <div *ngIf="indicators" class="carousel-dot-container">
-                                                    <span *ngFor="let dot of photos let i=index" class="dot"
-                                                        [ngClass]="{'active':selectedIndex === i}"
-                                                        (click)="selectImage(i)">
-                                                    </span>
+                                            <ng-template #elseFinancial>
+                                                <div *ngIf="BuzDetails.financial.status=='Approved'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
                                                 </div>
+                                                <div *ngIf="BuzDetails.financial.status=='Rejected'"
+                                                    style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title> GST Returns Document(Upto 24 Months)*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.gst.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.gst.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+                            <table>
+                                <tr>
+                                    <td>
+
+
+
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.gst.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.gst.files; let i=index">
+                                            <div *ngIf="BuzDetails.gst.files[i].includes('.jpg?') || BuzDetails.gst.files[i].includes('.jpeg?') || BuzDetails.gst.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.gst.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
                                             </div>
-                                        </td>
-                                        <td>
-                                            <div class="operation">
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.gst.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
+                                    </td>
+                                    <td>
+                                        <div class="operation">
+                                            <div *ngIf="BuzDetails.gst.status=='In-Progress'; else elseGst">
+                                                <button style="margin-left:4rem" mat-mini-fab [ngClass]="{'green' : gstFlagDone, 'black': !gstFlagDone}"
+                                                    (click)="doneFlagGST()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
+                                                <button mat-mini-fab [ngClass]="{'black' : !gstFlagCancel, 'red': gstFlagCancel}"
+                                                    (click)="cancelFlagGST()"><mat-icon>close</mat-icon></button><br><br>
+                                                <mat-form-field class="e" appearance="outline">
+                                                    <mat-label [ngClass]="{'requiredColor':gstFlagDone, 'notRequiredColor':!gstFlagDone}"
+                                                        [ngClass]="{'requiredColor':gstFlagCancel , 'notRequiredColor':!gstFlagCancel}">Comments</mat-label>
+                                                    <mat-select formControlName="gst_details">
+                                                        <mat-option *ngFor="let c of gstCommentsList" [value]="c">{{c}}</mat-option>
+                                                    </mat-select>
+                                                </mat-form-field>
+                                            </div>
+                                            <ng-template #elseGst>
+                                                <div *ngIf="BuzDetails.gst.status=='Approved'" style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
+                                                </div>
+                                                <div *ngIf="BuzDetails.gst.status=='Rejected'" style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                        
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </mat-expansion-panel>
+
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>Store Images*
+                            </mat-panel-title>
+                            <mat-panel-description>
+                                <mat-icon *ngIf="BuzDetails.storeImages.status=='Approved'"
+                                    style="color: green;">check_circle</mat-icon>
+                                <mat-icon *ngIf="BuzDetails.storeImages.status=='Rejected'"
+                                    style="color: red;">cancel</mat-icon>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="panelbody">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Document Type</mat-label>
+                                            <input type="text" matInput value="" [readonly]="!editable">
+                                        </mat-form-field>
+
+
+
+                                    </td>
+                                    <td>
+                                        <div *ngIf="BuzDetails.storeImages.files" class="carousel-container">
+                                            <div *ngFor="let image of BuzDetails.storeImages.files; let i=index">
+                                            <div *ngIf="BuzDetails.storeImages.files[i].includes('.jpg?') || BuzDetails.storeImages.files[i].includes('.jpeg?') || BuzDetails.storeImages.files[i].includes('.png?'); else panPdf" >
+                                               <img  src={{BuzDetails.storeImages.files[i]}}
+                                              [ngClass]="{'image-active': selectedIndex === i}" />
+                                            </div>
+                                            <ng-template #panPdf>
+                                              <button (click)="openDialog(BuzDetails.storeImages.files[i])"><mat-icon>description</mat-icon></button>
+                                            </ng-template>
+                                            </div>
+                                           
+                                          </div>
+                                    </td>
+                                    <td>
+                                        <div class="operation">
+                                            <div *ngIf="BuzDetails.storeImages.status=='In-Progress'; else elseStoreImages">
                                                 <button style="margin-left:4rem" mat-mini-fab
                                                     [ngClass]="{'green' : imagesFlagDone, 'black': !imagesFlagDone}"
                                                     (click)="doneFlagImage()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
-                                                <button mat-mini-fab
-                                                    [ngClass]="{'black' : !imagesFlagCancel, 'red': imagesFlagCancel}"
+                                                <button mat-mini-fab [ngClass]="{'black' : !imagesFlagCancel, 'red': imagesFlagCancel}"
                                                     (click)="cancelFlagImage()"><mat-icon>close</mat-icon></button><br><br>
                                                 <mat-form-field class="e" appearance="outline">
-                                                    <mat-label
-                                                        [ngClass]="{'requiredColor':imagesFlagDone, 'notRequiredColor':!imagesFlagDone}"
+                                                    <mat-label [ngClass]="{'requiredColor':imagesFlagDone, 'notRequiredColor':!imagesFlagDone}"
                                                         [ngClass]="{'requiredColor':imagesFlagCancel , 'notRequiredColor':!imagesFlagCancel}">Comments</mat-label>
                                                     <mat-select formControlName="images">
-                                                        <mat-option *ngFor="let c of imagesCommentsList"
-                                                            [value]="c">{{c}}</mat-option>
+                                                        <mat-option *ngFor="let c of imagesCommentsList" [value]="c">{{c}}</mat-option>
                                                     </mat-select>
                                                 </mat-form-field>
                                             </div>
+                                            <ng-template #elseStoreImages>
+                                                <div *ngIf="BuzDetails.storeImages.status=='Approved'" style="display:flex;justify-content:center">
+                                                    <h2 style="color:green">Approved</h2>
+                                                </div>
+                                                <div *ngIf="BuzDetails.storeImages.status=='Rejected'" style="display:flex;justify-content:center">
+                                                    <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                                                </div>
+                                            </ng-template>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
 
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-
-                        </mat-expansion-panel>
-                    </mat-accordion>
-                    <div class="btn-view">
-                        <button mat-raised-button style="background-color:#f79e1b" type="submit" (click)="onSubmit()">
-                            <h3>Submit</h3>
-                        </button>
-                    </div>
-
+                    </mat-expansion-panel>
+                </mat-accordion>
+                <div class="btn-view">
+                    <button mat-raised-button style="background-color:#f79e1b" type="submit" (click)="onSubmit()">
+                        <h3>Submit</h3>
+                    </button>
+                </div>
                 
-
-
             </div>
         </form>
 

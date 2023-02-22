@@ -7,4 +7,8 @@ import { Component } from '@angular/core';
 })
 export class HomePageComponent {
 
+  ngOnInit(){
+    // console.log(sessionStorage.getItem('login'))
+  }
+
 }

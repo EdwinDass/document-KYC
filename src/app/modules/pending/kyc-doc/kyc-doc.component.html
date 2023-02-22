@@ -8,20 +8,20 @@
         <button mat-mini-fab (click)="openBusDoc()"><mat-icon>keyboard_arrow_right</mat-icon></button>
       </div>
       <div class="company-details">
-        <h2>Campany Name: Amazon</h2>
-        <h2>GSTIN: 27AAICA3918J1CT</h2>
+        <h2>Campany Name: {{companyDetails.company_name?companyDetails.company_name:""}}</h2>
+        <h2>GSTIN:  {{companyDetails.gstin?companyDetails.gstin:""}} </h2>
       </div>
     </div>
     <form [formGroup]="form">
       <div class="main-wrapper">
         <mat-accordion class="CustEx">
           <mat-expansion-panel class="mat-elevation-z0">
-            <mat-expansion-panel-header>
+            <mat-expansion-panel-header (click)="selectImage(0)">
               <mat-panel-title>Aadhaar Proof*
               </mat-panel-title>
               <mat-panel-description>
-                <mat-icon style="color: green;">check_circle</mat-icon>
-                <mat-icon style="color: red;">remove_circle</mat-icon>
+                <mat-icon *ngIf="KYCDetails.aadhar.status=='Approved'" style="color: green;">check_circle</mat-icon>
+                <mat-icon *ngIf="KYCDetails.aadhar.status=='Rejected'" style="color: red;">cancel</mat-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
             <div class="panelbody">
@@ -34,7 +34,7 @@
 
                     <mat-form-field style="padding-bottom: 20px;" appearance="outline">
                       <mat-label>UID Number</mat-label>
-                      <input type="text" matInput value="5090 9050 9087" [readonly]="!editable">
+                      <input type="text" matInput value="{{KYCDetails.aadhar.number}}" [readonly]="!editable">
                     </mat-form-field>
                   </td>
 
@@ -43,16 +43,26 @@
 
                   <td>
 
-                    <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                      <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                    <div *ngIf="KYCDetails.aadhar.files" class="carousel-container">
+                      <div *ngFor="let image of KYCDetails.aadhar.files; let i=index">
+                      <div *ngIf="KYCDetails.aadhar.files[i].includes('.jpg?') || KYCDetails.aadhar.files[i].includes('.jpeg?') || KYCDetails.aadhar.files[i].includes('.png?'); else aadhaarPdf" >
+                         <img  src={{KYCDetails.aadhar.files[i]}}
                         [ngClass]="{'image-active': selectedIndex === i}" />
+                      </div>
+                      <ng-template #aadhaarPdf>
+                        <button (click)="openDialog(KYCDetails.aadhar.files[i])"><mat-icon>description</mat-icon></button>
+                      </ng-template>
+                      </div>
                       <div *ngIf="indicators" class="carousel-dot-container">
-                        <span *ngFor="let dot of photos let i=index" class="dot"
+                        <span *ngFor="let dot of KYCDetails.aadhar.files let i=index" class="dot"
                           [ngClass]="{'active':selectedIndex === i}" (click)="selectImage(i)">
                         </span>
                       </div>
                     </div>
-
+                   
+                    <!-- <div *ngIf="KYCDetails.aadhar.files.length > 0" class="carousel-container">
+                    <button mat-mini-fab *ngFor="let image of KYCDetails.aadhar.files; let i=index" (click)=openDialog(KYCDetails.aadhar.files[i])><mat-icon>description</mat-icon></button>
+                  </div> -->
                   </td>
 
 
@@ -61,7 +71,8 @@
                   <td>
 
                     <div class="operation">
-                      <div  *ngIf="!aadhaarStatus; else elseApproved">
+                      <div  *ngIf="KYCDetails.aadhar.status=='In-Progress'; else elseApproved" >
+                       
                         <button style="margin-left:4rem" mat-mini-fab
                           [ngClass]="{'green' : aadhaarFlagDone, 'black': !aadhaarFlagDone}"
                           (click)="doneFlagAadhaar()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;
@@ -78,8 +89,11 @@
                       </div>
 
                       <ng-template #elseApproved>
-                        <div style="display:flex;justify-content:center">
+                        <div *ngIf="KYCDetails.aadhar.status=='Approved'" style="display:flex;justify-content:center">
                           <h2 style="color:green">Approved</h2>
+                        </div>
+                        <div *ngIf="KYCDetails.aadhar.status=='Rejected'" style="display:flex;justify-content:center">
+                          <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
                         </div>
                       </ng-template>
                     </div>
@@ -99,13 +113,13 @@
           </mat-expansion-panel>
 
           <mat-expansion-panel class="mat-elevation-z0">
-            <mat-expansion-panel-header>
+            <mat-expansion-panel-header (click)="selectImage(0)">
               <mat-panel-title>
                 PAN Proof*
               </mat-panel-title>
               <mat-panel-description>
-                <mat-icon style="color: green;">check_circle</mat-icon>
-                <mat-icon style="color: red;">remove_circle</mat-icon>
+                <mat-icon  *ngIf="KYCDetails.pan.status=='Approved'" style="color: green;" >check_circle</mat-icon>
+                <mat-icon  *ngIf="KYCDetails.pan.status=='Rejected'" style="color: red;" >cancel</mat-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
             <div class="panelbody">
@@ -116,30 +130,34 @@
                 <tr>
                   <td> <mat-form-field appearance="outline">
                       <mat-label>PAN Number</mat-label>
-                      <input type="text" matInput value="EBL6463778" [readonly]="!editable">
+                      <input type="text" matInput value="{{KYCDetails.pan.number}}" [readonly]="!editable">
                     </mat-form-field>
 
                   </td>
                   <td>
-                    <div *ngIf="photos && photos.length > 0" class="carousel-container">
-                      <img *ngFor="let image of photos; let i=index" src={{photos[i]}}
+                    <div *ngIf="KYCDetails.pan.files" class="carousel-container">
+                      <div *ngFor="let image of KYCDetails.pan.files; let i=index">
+                      <div *ngIf="KYCDetails.pan.files[i].includes('.jpg?') || KYCDetails.pan.files[i].includes('.jpeg?') || KYCDetails.pan.files[i].includes('.png?'); else panPdf" >
+                         <img  src={{KYCDetails.pan.files[i]}}
                         [ngClass]="{'image-active': selectedIndex === i}" />
-                      <div *ngIf="indicators" class="carousel-dot-container">
-                        <span *ngFor="let dot of photos let i=index" class="dot"
-                          [ngClass]="{'active':selectedIndex === i}" (click)="selectImage(i)">
-
-                        </span>
-
                       </div>
-
-
+                      <ng-template #panPdf>
+                        <button mat-mini-fab (click)="openDialog(KYCDetails.pan.files[i])"><mat-icon>description</mat-icon></button>
+                      </ng-template>
+                      </div>
+                     
+                    </div>
+                    <div *ngIf="indicators" class="carousel-dot-container">
+                      <span *ngFor="let dot of KYCDetails.pan.files let i=index" class="dot"
+                        [ngClass]="{'active':selectedIndex === i}" (click)="selectImage(i)">
+                      </span>
                     </div>
 
 
                   </td>
                   <td>
 
-                    <div class="operation">
+                    <div   *ngIf="KYCDetails.pan.status=='In-Progress'; else elsePan"  class="operation">
                       <button style="margin-left:4rem" mat-mini-fab
                         [ngClass]="{'green' : panFlagDone, 'black': !panFlagDone}"
                         (click)="doneFlagPan()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
@@ -153,6 +171,16 @@
                         </mat-select>
                       </mat-form-field>
                     </div>
+                    <ng-template #elsePan>
+                      
+                      <div *ngIf="KYCDetails.pan.status=='Rejected'" style="display:flex;justify-content:center">
+                        <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                      </div>
+                        <div *ngIf="KYCDetails.pan.status=='Approved'" style="display:flex;justify-content:center">
+                          <h2 style="color:green">Approved</h2>
+                        </div>
+                      
+                    </ng-template>
                   </td>
 
                 </tr>
@@ -167,8 +195,8 @@
               <mat-panel-title>Contact Details*
               </mat-panel-title>
               <mat-panel-description>
-                <mat-icon style="color: green;">check_circle</mat-icon>
-                <mat-icon style="color: red;">remove_circle</mat-icon>
+                <mat-icon *ngIf="KYCDetails.mobile.status=='Approved'" style="color: green;">check_circle</mat-icon>
+                <mat-icon *ngIf="KYCDetails.mobile.status=='Rejected'" style="color: red;" >remove_circle</mat-icon>
               </mat-panel-description>
             </mat-expansion-panel-header>
             <div class="panelbody">
@@ -183,14 +211,14 @@
                   <td>
                     <mat-form-field appearance="outline">
                       <mat-label>Mobile Number</mat-label>
-                      <input type="text" matInput value="9089786756 " [readonly]="!editable">
+                      <input type="text" matInput value="+{{KYCDetails.mobile.countryCode }} {{ KYCDetails.mobile.number}} " [readonly]="!editable">
                     </mat-form-field>
 
                   </td>
                   <td></td>
 
                   <td>
-                    <div class="operation">
+                    <div class="operation"   *ngIf="KYCDetails.mobile.status=='In-Progress'; else elseMobile" >
                       <button style="margin-left:4rem" mat-mini-fab
                         [ngClass]="{'green' : mobileFlagDone, 'black': !mobileFlagDone}"
                         (click)="doneFlagMobile()"><mat-icon>done</mat-icon></button>&nbsp;&nbsp;&nbsp;
@@ -206,6 +234,14 @@
                       </mat-form-field>
 
                     </div>
+                    <ng-template #elseMobile>
+                      <div *ngIf="KYCDetails.mobile.status=='Approved'" style="display:flex;justify-content:center">
+                        <h2 style="color:green">Approved</h2>
+                      </div>
+                      <div *ngIf="KYCDetails.mobile.status=='Rejected'" style="display:flex;justify-content:center">
+                        <h2 style="color:rgb(255, 0, 0)">Rejected</h2>
+                      </div>
+                    </ng-template>
 
                   </td>
                 </tr>
@@ -218,15 +254,17 @@
           <button mat-raised-button style="background-color:#f79e1b" type="submit" (click)="onSubmit()">
             <h3>Submit</h3>
           </button>
-        </div>
-        <!-- <div class="display-status" *ngIf="displayFlag">
-            <h4>Aadhaar Status:</h4><h4 *ngIf="aadhaarFlagDone" >approve</h4><h4 *ngIf="aadhaarFlagCancel " >reject</h4>
+         
+          
            
-          </div> -->
-
-
+          
+         
+        
       </div>
+    </div>
+   
     </form>
+   
 
   </div>
 </app-layout>

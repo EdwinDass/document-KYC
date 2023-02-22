@@ -12,6 +12,8 @@ import { PendingDocComponent } from './modules/pending/pending-doc/pending-doc.c
 import { PendingModule } from './modules/pending/pending.module';
 import { HomeModule } from './modules/home/home.module';
 import { DocDetailsComponent } from './modules/approved/doc-details/doc-details.component';
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { DocDetailsComponent } from './modules/approved/doc-details/doc-details.
     CoreModule,
     HomeModule,
     PendingModule,
-    ApprovedModule
+    ApprovedModule,
+    HttpClientModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

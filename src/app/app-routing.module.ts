@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { NoauthGuard } from './core/guards/noauth/noauth.guard';
 import { ApprovedDocComponent } from './modules/approved/approved-doc/approved-doc.component';
 import { DocDetailsComponent } from './modules/approved/doc-details/doc-details.component';
 import { HomePageComponent } from './modules/home/home-page/home-page.component';
@@ -7,9 +8,9 @@ import { LoginPageComponent } from './modules/login/login-page/login-page.compon
 import { PendingDocComponent } from './modules/pending/pending-doc/pending-doc.component';
 
 const routes: Routes = [
-  { path: "", component: LoginPageComponent},
+  // { path: "", redirectTo: "login", pathMatch: "full" },
  
-  { path: "login",component:LoginPageComponent},
+  { path: "",component:LoginPageComponent, },
   { path: "home", component: HomePageComponent },
   { path: "pending", component: PendingDocComponent },
   { path: "approved", component: ApprovedDocComponent },

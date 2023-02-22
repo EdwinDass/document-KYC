@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { FilesDialogComponent } from '../files-dialog/files-dialog.component';
+import { ApiService } from '../service/api/api.service';
 
 @Component({
   selector: 'app-business-doc',
@@ -11,9 +13,12 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 export class BusinessDocComponent implements OnInit {
 
 
-
   @Input() indicators = true;
   selectedIndex = 0;
+
+  BuzDetails:any
+  companyId:any;
+  companyDetails:any;
 
 
 
@@ -44,7 +49,12 @@ export class BusinessDocComponent implements OnInit {
   bankingFlagDone = false
   bankingFlagCancel = false
 
-  // Financial & GST Returns flag
+  // Financials flag
+
+  financialFlagCancel=false;
+  financialFlagDone=false;
+
+   //  GST Returns flag
   gstFlagCancel = false;
   gstFlagDone = false;
 
@@ -52,7 +62,6 @@ export class BusinessDocComponent implements OnInit {
 
   imagesFlagDone = false;
   imagesFlagCancel = false;
-
   //dynamic comments array list
 
   businessCommentsList: any = [];
@@ -60,6 +69,7 @@ export class BusinessDocComponent implements OnInit {
   vintageCommentsList: any = [];
   firmCommentsList: any = [];
   bankingCommentsList: any = [];
+  financialCommentList:any=[]
   gstCommentsList: any = [];
   imagesCommentsList: any = [];
 
@@ -69,41 +79,85 @@ export class BusinessDocComponent implements OnInit {
 
 
 
-  constructor(private router: Router, private fb: FormBuilder) { }
+  constructor(private router: Router, private fb: FormBuilder,private apiservice: ApiService, private route: ActivatedRoute, private dialog: MatDialog ) { }
 
   ngOnInit() {
+
+    this.route.params.subscribe((params) => {
+      this.companyId = params.id
+    });
+    this.reset();
+
+    this.getspecifiedcompanydetails();
+    this. getBuzdocument();
+
+    // console.log(this.BuzDetails.data)
+
+
     this.form = this.fb.group({
       business_proof: [""],
       ownership_proof: [""],
       vintage_proof: [""],
       firm_details: [""],
       banking_details: [""],
+      financial_details: [""],
       gst_details: [""],
       images: [""]
     })
   }
 
-  goKyc() {
-    this.router.navigate(["kyc_document"])
+  getspecifiedcompanydetails(){
+    this.apiservice.getSpecifiedCompanyDetails(this.companyId).subscribe((response:any)=>{
+      if(response.status==true)
+      {
+       this.companyDetails= response.company;
+      }
+    })
   }
+
+  getBuzdocument(){
+    this.apiservice.getKycDocument(this.companyId).subscribe((response:any)=>{
+      console.log(response.data)
+      if(response.status==true){
+        const buzDetails = response.data? response.data : [];
+
+        this.BuzDetails=buzDetails;
+        console.log(this.BuzDetails)
+      }
+    })
+  }
+
+  openDialog(files:any ):void{
+    console.log(files);
+    // const dialogRef =
+     this.dialog.open(FilesDialogComponent,{height: '500px',
+     width: '900px',
+     data:{files:files}});
+
+    // dialogRef.afterClosed().subscribe((result:any) => {
+    //   console.log('The dialog was closed');
+    // });
+   
+  }
+
 
 
 
   doneFlagBusiness() {
     //business proof done flag
+    this.form.controls['business_proof'].setValue("");
     if (this.businessFlagCancel) {
       this.businessFlagCancel = !this.businessFlagCancel;
       this.businessFlagDone = !this.businessFlagDone;
-      this.form = this.fb.group({
-        business_proof: [""],
-      })
 
     } else {
       this.businessFlagDone = !this.businessFlagDone;
     }
     if (this.businessFlagDone) {
+      this.form.get('business_proof')?.setValidators([Validators.required]);
       this.businessCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('business_proof')?.clearValidators();
       this.businessCommentsList = []
     }
 
@@ -111,18 +165,18 @@ export class BusinessDocComponent implements OnInit {
 
   cancelFlagBusiness() {
     //business proof cancel flag
+    this.form.controls['business_proof'].setValue("");
     if (this.businessFlagDone) {
       this.businessFlagDone = !this.businessFlagDone;
       this.businessFlagCancel = !this.businessFlagCancel;
-      this.form = this.fb.group({
-        business_proof: [""],
-      })
     } else {
       this.businessFlagCancel = !this.businessFlagCancel;
     }
     if (this.businessFlagCancel) {
+      this.form.get('business_proof')?.setValidators([Validators.required]);
       this.businessCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('business_proof')?.clearValidators();
       this.businessCommentsList = []
     }
 
@@ -130,18 +184,18 @@ export class BusinessDocComponent implements OnInit {
 
   doneFlagOwnership() {
     //ownership Proof done flag
+    this.form.controls['ownership_proof'].setValue("");
     if (this.ownershipFlagCancel) {
       this.ownershipFlagCancel = !this.ownershipFlagCancel;
       this.ownershipFlagDone = !this.ownershipFlagDone;
-      this.form = this.fb.group({
-        ownership_proof: [""]
-      })
     } else {
       this.ownershipFlagDone = !this.ownershipFlagDone;
     }
     if (this.ownershipFlagDone) {
+      this.form.get('ownership_proof')?.setValidators([Validators.required]);
       this.ownershipCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('ownership_proof')?.clearValidators();
       this.ownershipCommentsList = []
     }
 
@@ -149,18 +203,18 @@ export class BusinessDocComponent implements OnInit {
 
   cancelFlagOwnership() {
     //ownership Proof cancel flag
+    this.form.controls['ownership_proof'].setValue("");
     if (this.ownershipFlagDone) {
       this.ownershipFlagDone = !this.ownershipFlagDone;
       this.ownershipFlagCancel = !this.ownershipFlagCancel;
-      this.form = this.fb.group({
-        ownership_proof: [""]
-      })
     } else {
       this.ownershipFlagCancel = !this.ownershipFlagCancel;
     }
     if (this.ownershipFlagCancel) {
+      this.form.get('ownership_proof')?.setValidators([Validators.required]);
       this.ownershipCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('ownership_proof')?.clearValidators();
       this.ownershipCommentsList = []
     }
   }
@@ -168,18 +222,18 @@ export class BusinessDocComponent implements OnInit {
 
   doneFlagVintage() {
     //vintage Proof done flag
+    this.form.controls['vintage_proof'].setValue("");
     if (this.vintageFlagCancel) {
       this.vintageFlagCancel = !this.vintageFlagCancel;
       this.vintageFlagDone = !this.vintageFlagDone;
-      this.form = this.fb.group({
-        vintage_proof: [""]
-      })
     } else {
       this.vintageFlagDone = !this.vintageFlagDone;
     }
     if (this.vintageFlagDone) {
+      this.form.get('vintage_proof')?.setValidators([Validators.required]);
       this.vintageCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('vintage_proof')?.clearValidators();
       this.vintageCommentsList = [];
     }
 
@@ -187,18 +241,18 @@ export class BusinessDocComponent implements OnInit {
 
   cancelFlagVintage() {
     //vintage Proof cancel flag
+    this.form.controls['vintage_proof'].setValue("");
     if (this.vintageFlagDone) {
       this.vintageFlagDone = !this.vintageFlagDone;
       this.vintageFlagCancel = !this.vintageFlagCancel;
-      this.form = this.fb.group({
-        vintage_proof: [""]
-      })
     } else {
       this.vintageFlagCancel = !this.vintageFlagCancel;
     }
     if (this.vintageFlagCancel) {
+      this.form.get('vintage_proof')?.setValidators([Validators.required]);
       this.vintageCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('vintage_proof')?.clearValidators();
       this.vintageCommentsList = []
     }
 
@@ -207,18 +261,18 @@ export class BusinessDocComponent implements OnInit {
 
   doneFlagPatnership() {
     //Patnership proof done flag
+    this.form.controls['firm_details'].setValue("");
     if (this.FirmFlagCancel) {
       this.FirmFlagCancel = !this.FirmFlagCancel;
       this.FirmFlagDone = !this.FirmFlagDone;
-      this.form = this.fb.group({
-        firm_details: [""]
-      })
     } else {
       this.FirmFlagDone = !this.FirmFlagDone;
     }
     if (this.FirmFlagDone) {
+      this.form.get('firm_details')?.setValidators([Validators.required]);
       this.firmCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('firm_details')?.clearValidators();
       this.firmCommentsList = []
     }
 
@@ -226,18 +280,18 @@ export class BusinessDocComponent implements OnInit {
 
   cancelFlagPatnership() {
     //Patnership proof cancel flag
+    this.form.controls['firm_details'].setValue("");
     if (this.FirmFlagDone) {
       this.FirmFlagDone = !this.FirmFlagDone;
       this.FirmFlagCancel = !this.FirmFlagCancel;
-      this.form = this.fb.group({
-        firm_details: [""]
-      })
     } else {
       this.FirmFlagCancel = !this.FirmFlagCancel;
     }
     if (this.FirmFlagCancel) {
+      this.form.get('firm_details')?.setValidators([Validators.required]);
       this.firmCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('firm_details')?.clearValidators();
       this.firmCommentsList = []
     }
   }
@@ -245,108 +299,146 @@ export class BusinessDocComponent implements OnInit {
 
   doneFlagBanking() {
     // Banking Details done flag
+    this.form.controls['banking_details'].setValue("");
     if (this.bankingFlagCancel) {
       this.bankingFlagCancel = !this.bankingFlagCancel;
       this.bankingFlagDone = !this.bankingFlagDone;
-      this.form = this.fb.group({
-        banking_details: [""]
-      })
     } else {
       this.bankingFlagDone = !this.bankingFlagDone;
     }
     if (this.bankingFlagDone) {
+      this.form.get('banking_details')?.setValidators([Validators.required]);
       this.bankingCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('banking_details')?.clearValidators();
       this.bankingCommentsList = []
     }
   }
 
   cancelFlagBanking() {
     //Banking Details cancel flag
+    this.form.controls['banking_details'].setValue("");
     if (this.bankingFlagDone) {
       this.bankingFlagDone = !this.bankingFlagDone;
       this.bankingFlagCancel = !this.bankingFlagCancel;
-      this.form = this.fb.group({
-        banking_details: [""]
-      })
     } else {
       this.bankingFlagCancel = !this.bankingFlagCancel;
     }
     if (this.bankingFlagCancel) {
+      this.form.get('banking_details')?.setValidators([Validators.required]);
       this.bankingCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('banking_details')?.clearValidators();
       this.bankingCommentsList = []
     }
   }
 
+  doneFlagFinancial() {
+    //Financial done flag
+    this.form.controls['financial_details'].setValue("");
+    if (this.financialFlagCancel) {
+      this.financialFlagCancel = !this.financialFlagCancel;
+      this.financialFlagDone = !this.financialFlagDone;
+    } else {
+      this.financialFlagDone = !this.financialFlagDone;
+    }
+    if (this.financialFlagDone) {
+      this.form.get('financial_details')?.setValidators([Validators.required]);
+      this.financialCommentList = ["matching", "slighty matching", "need more clarity"];
+    } else {
+      this.form.get('financial_details')?.clearValidators();
+      this.financialCommentList = []
+    }
+  }
+
+  cancelFlagFinancial() {
+    //Financial cancel flag
+    this.form.controls['financial_details'].setValue("");
+    if (this.financialFlagDone) {
+      this.financialFlagDone = !this.financialFlagDone;
+      this.financialFlagCancel = !this.financialFlagCancel;
+    } else {
+      this.financialFlagCancel = !this.financialFlagCancel;
+    }
+    if (this.financialFlagCancel) {
+      this.form.get('financial_details')?.setValidators([Validators.required]);
+      this.financialCommentList = ["not matching", "duplicate", "completely blur"];
+    } else {
+      this.form.get('financial_details')?.clearValidators();
+      this.financialCommentList = []
+    }
+  }
+
+
+
   doneFlagGST() {
     //Financial & GST Returns done flag
+    this.form.controls['gst_details'].setValue("");
     if (this.gstFlagCancel) {
       this.gstFlagCancel = !this.gstFlagCancel;
       this.gstFlagDone = !this.gstFlagDone;
-      this.form = this.fb.group({
-        gst_details: [""],
-      })
     } else {
       this.gstFlagDone = !this.gstFlagDone;
     }
     if (this.gstFlagDone) {
+      this.form.get('gst_details')?.setValidators([Validators.required]);
       this.gstCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('gst_details')?.clearValidators();
       this.gstCommentsList = []
     }
   }
 
   cancelFlagGST() {
     //Financial & GST Returns cancel flag
+    this.form.controls['gst_details'].setValue("");
     if (this.gstFlagDone) {
       this.gstFlagDone = !this.gstFlagDone;
       this.gstFlagCancel = !this.gstFlagCancel;
-      this.form = this.fb.group({
-        gst_details: [""],
-      })
     } else {
       this.gstFlagCancel = !this.gstFlagCancel;
     }
     if (this.gstFlagCancel) {
+      this.form.get('gst_details')?.setValidators([Validators.required]);
       this.gstCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('gst_details')?.clearValidators();
       this.gstCommentsList = []
     }
   }
 
   doneFlagImage() {
     //Upload done flag
+    this.form.controls['images'].setValue("");
     if (this.imagesFlagCancel) {
       this.imagesFlagCancel = !this.imagesFlagCancel;
       this.imagesFlagDone = !this.imagesFlagDone;
-      this.form = this.fb.group({
-        images: [""]
-      })
     } else {
       this.imagesFlagDone = !this.imagesFlagDone;
     }
     if (this.imagesFlagDone) {
+      this.form.get('images')?.setValidators([Validators.required]);
       this.imagesCommentsList = ["matching", "slighty matching", "need more clarity"];
     } else {
+      this.form.get('images')?.clearValidators();
       this.imagesCommentsList = []
     }
   }
 
   cancelFlagImage() {
     //Upload cancel flag
+    this.form.controls['images'].setValue("");
     if (this.imagesFlagDone) {
       this.imagesFlagDone = !this.imagesFlagDone;
       this.imagesFlagCancel = !this.imagesFlagCancel;
-      this.form = this.fb.group({
-        images: [""]
-      })
     } else {
       this.imagesFlagCancel = !this.imagesFlagCancel;
     }
     if (this.imagesFlagCancel) {
+      this.form.get('images')?.setValidators([Validators.required]);
       this.imagesCommentsList = ["not matching", "duplicate", "completely blur"];
     } else {
+      this.form.get('images')?.clearValidators();
       this.imagesCommentsList = []
     }
   }
@@ -355,22 +447,82 @@ export class BusinessDocComponent implements OnInit {
     this.selectedIndex = index;
   }
   goback() {
-    this.router.navigate(["kyc_document"]);
+    this.router.navigate([`kyc_document/${this.companyId}`]);
+  }
+
+  reset(){
+    this.businessFlagDone = false;
+    this.businessFlagCancel = false;
+  
+    //ownership proof flag
+    this.ownershipFlagDone = false
+    this.ownershipFlagCancel = false
+  
+    //Vintage proof flag
+    this.vintageFlagDone = false
+    this.vintageFlagCancel = false
+  
+    //Patnership proof flag
+    this.FirmFlagDone = false
+    this.FirmFlagCancel = false
+  
+    //Banking Details flag
+    this.bankingFlagDone = false
+    this.bankingFlagCancel = false
+  
+    // Financials flag
+  
+    this.financialFlagCancel=false;
+    this.financialFlagDone=false;
+  
+     //  GST Returns flag
+    this.gstFlagCancel = false;
+    this.gstFlagDone = false;
+  
+    // Upload flag
+  
+    this.imagesFlagDone = false;
+    this.imagesFlagCancel = false;
+  
+    //dynamic comments array list
+  
+    this.businessCommentsList = [];
+    this. ownershipCommentsList = [];
+    this. vintageCommentsList = [];
+    this. firmCommentsList = [];
+    this. bankingCommentsList = [];
+    this.financialCommentList=[]
+    this. gstCommentsList = [];
+    this.imagesCommentsList = [];
+
   }
 
   onSubmit() {
 
-    const formData = new FormData;
+    
+    let body: any = {};
 
-    if (this.businessFlagDone || this.bankingFlagCancel) {
+    body["gstin"] = this.companyDetails.gstin;
+  
+
+    if (this.businessFlagDone || this.businessFlagCancel) {
       if (this.form.value.business_proof != "") {
-        formData.append("business_proof", this.form.value.business_proof);
-        formData.forEach((r) => console.log(r));
-        alert("Business Details is Submitted")
-        this.businessFlagDone = false;
-        this.bankingFlagCancel = false;
-        this.businessCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.business_proof;
+
+        if (this.businessFlagDone) {
+          status = "Approved"
+        } else if(this.businessFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["BusinessProof"] = {
+          "comment": comment,
+          "status" : status
+        }
       } else {
         alert("Please Comment on Business Details");
       }
@@ -379,13 +531,21 @@ export class BusinessDocComponent implements OnInit {
 
     if (this.ownershipFlagDone || this.ownershipFlagCancel) {
       if (this.form.value.ownership_proof != "") {
-        formData.append("ownership_proof", this.form.value.ownership_proof);
-        formData.forEach((r) => console.log(r));
-        alert("Ownership Details is Submitted")
-        this.ownershipFlagDone = false;
-        this.ownershipFlagCancel = false;
-        this.ownershipCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.ownership_proof
+        if (this.ownershipFlagDone) {
+          status = "Approved"
+        } else if (this.ownershipFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["OwnershipProof"] = {
+          "comment": comment,
+          "status": status
+        }
       } else {
         alert("Please Comment on Ownership Details");
       }
@@ -394,13 +554,21 @@ export class BusinessDocComponent implements OnInit {
 
     if (this.vintageFlagDone || this.vintageFlagCancel) {
       if (this.form.value.vintage_proof != "") {
-        formData.append("vintage_proof", this.form.value.vintage_proof);
-        formData.forEach((r) => console.log(r));
-        alert("Vintage Proof is Submitted")
-        this.ownershipFlagDone = false;
-        this.vintageFlagCancel = false;
-        this.vintageCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.vintage_proof;
+        if (this.vintageFlagDone) {
+          status = "Approved"
+        } else if (this.vintageFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["VintageProof"] = {
+          "comment": comment,
+          "status": status
+        }
       } else {
         alert("Please Comment on Vintage Details");
       }
@@ -409,13 +577,21 @@ export class BusinessDocComponent implements OnInit {
 
     if (this.FirmFlagDone || this.FirmFlagCancel) {
       if (this.form.value.firm_details != "") {
-        formData.append("firm_details", this.form.value.firm_details);
-        formData.forEach((r) => console.log(r));
-        alert(" PartnerShip & Firm Details is Submitted")
-        this.FirmFlagDone = false;
-        this.FirmFlagCancel = false;
-        this.firmCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.firm_details;
+        if (this.FirmFlagDone) {
+          status = "Approved"
+        } else if (this.FirmFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["partnershipDetails"] = {
+          "comment": comment,
+          "status": status
+        }
       } else {
         alert("Please Comment on PartnerShip & Firm Details");
       }
@@ -424,13 +600,21 @@ export class BusinessDocComponent implements OnInit {
 
     if (this.bankingFlagDone || this.bankingFlagCancel) {
       if (this.form.value.banking_details != "") {
-        formData.append("banking_details", this.form.value.banking_details);
-        formData.forEach((r) => console.log(r));
-        alert("Banking Details is Submitted")
-        this.bankingFlagDone = false;
-        this.bankingFlagCancel = false;
-        this.bankingCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.banking_details
+        if (this.bankingFlagDone) {
+          status = "Approved"
+        } else if(this.bankingFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "Approved"
+        }
+
+        body["bankStatementDetails"] = {
+          "comment": comment,
+          "status": status
+        }
       } else {
         alert("Please Comment on Banking Details");
       }
@@ -439,30 +623,76 @@ export class BusinessDocComponent implements OnInit {
 
     if (this.gstFlagDone || this.gstFlagCancel) {
       if (this.form.value.gst_details != "") {
-        formData.append("gst_details", this.form.value.gst_details);
-        formData.forEach((r) => console.log(r));
-        alert("Financial & GST Details is Submitted")
-        this.gstFlagDone = false;
-        this.gstFlagCancel = false;
-        this.gstCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.gst_details;
+        if (this.gstFlagDone) {
+          status = "Approved"
+        } else if (this.gstFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["GstDetails"] = {
+          "comment": comment,
+          "status": status
+        }
       } else {
         alert("Please Comment on Financial & GST Details");
       }
     }
 
+
+    if (this.financialFlagDone || this.financialFlagCancel) {
+      if (this.form.value.financial_details != "") {
+        let status = "";
+    let comment="";
+        comment = this.form.value.financial_details;
+        if (this.financialFlagDone) {
+          status = "Approved"
+        } else if (this.financialFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["financialDetails"] = {
+          "comment": comment,
+          "status": status
+        }
+      } else {
+        alert("Please Comment on Financial & GST Details");
+      }
+    }
+
+
     if (this.imagesFlagDone || this.imagesFlagCancel) {
       if (this.form.value.images != "") {
-        formData.append("images", this.form.value.images);
-        formData.forEach((r) => console.log(r));
-        alert("Uploaded Images Details is Submitted")
-        this.imagesFlagDone = false;
-        this.imagesFlagCancel = false;
-        this.imagesCommentsList = [];
-        // this.displayFlag=true;
+        let status = "";
+    let comment="";
+        comment = this.form.value.images;
+        if (this.imagesFlagDone) {
+          status = "Approved"
+        } else if (this.imagesFlagCancel) {
+          status = "Rejected"
+        } else {
+          status = "In-Progress"
+        }
+
+        body["storeImages"] = {
+          "comment": comment,
+          "status": status
+        }
       } else {
         alert("Please Comment on Uploaded Images Details");
       }
     }
+    
+    this.apiservice.setStatusForDocument(this.companyId, body).subscribe((res: any) => {
+      console.log(" Status submitted", body, res);
+      alert("KYC document Submitted")
+    this.ngOnInit();
+    })
   }
 }

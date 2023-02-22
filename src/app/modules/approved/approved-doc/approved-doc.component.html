@@ -3,7 +3,7 @@
     <div id="pending-list">
       <div class="main-wrapper">
        
-     <h2>Pending Documents</h2>
+     <h2>Approved Company Documents</h2>
      
   
          
@@ -11,23 +11,21 @@
           <!-- paymentid Column -->
   
   
-          <ng-container matColumnDef="sl_no">
+          <!-- <ng-container matColumnDef="sl_no">
             <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by sl_no">
               Sl No.
             </th>
-            <td class="number" mat-cell *matCellDef="let element">
-              <!-- {{ element && element.createdBy ? element.createdBy : "" }} -->
-              1
+            <td class="number" mat-cell *matCellDef="let element" >
             </td>
-          </ng-container>
+          </ng-container> -->
   
           <ng-container matColumnDef="merchant_name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by merchant_name">
-              Merchant Name
+              Company Name
             </th>
             <td mat-cell *matCellDef="let element">
-              <!-- {{ element && element.business_owner_name ? element.business_owner_name : "" }} -->
-              Edwin
+              {{ element && element.company_name ? element.company_name : "" }}
+            
             </td>
           </ng-container>
   
@@ -39,8 +37,8 @@
               GST Number
             </th>
             <td mat-cell *matCellDef="let element">
-              <!-- {{ element && element.email ? element.email : "" }} -->
-              Edwjigdvjqv123
+              {{ element && element.gstin  ? element.gstin : "" }}
+              <!-- Edwjigdvjqv123 -->
             </td>
           </ng-container>
           <ng-container matColumnDef="kyc_doc_pending">
@@ -48,8 +46,8 @@
               KYC document Pending
             </th>
             <td class="number" mat-cell *matCellDef="let element">
-              <!-- {{ element && element.gstin? element.gstin : "" }} -->
-              2/3
+              {{ element && element.count? element.count : "" }}
+              <!-- 2/3 -->
             </td>
           </ng-container>
   
@@ -58,20 +56,20 @@
               Business Document Pending
             </th>
             <td class="number"  mat-cell *matCellDef="let element">
-              <!-- {{ element && element.mobile_number ? element.mobile_number : "" }} -->
-              4/7
+              {{ element && element.otherCount ? element.otherCount : "" }}
+              <!-- 4/7 -->
             </td>
           </ng-container>
   
-          <ng-container matColumnDef="action">
+          <!-- <ng-container matColumnDef="action">
             <th mat-header-cell mat-sort-header *matHeaderCellDef>
               Action
             </th>
             <td mat-cell *matCellDef="let element">
               <!-- {{ element && element.mobile_number ? element.mobile_number : "" }} -->
-            <button mat-mini-fab (click)="openDoc(element)"><mat-icon>subdirectory_arrow_right</mat-icon></button>
+            <!--<button mat-mini-fab (click)="openDoc(element)"><mat-icon>subdirectory_arrow_right</mat-icon></button>
             </td>
-          </ng-container>
+          </ng-container> -->
   
   
   
